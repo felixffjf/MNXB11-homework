@@ -12,6 +12,10 @@ int computeAsciiSum(const std::string& first_argument) {
     return ascii_sum_of_first_arg;
 }
 
+int calculateKey(int ascii_sum, char first_char, std::size_t length) {
+    return (ascii_sum ^ (first_char * 3)) << (length & 0x1f)
+}
+
 int main(int nr_of_args, char *args[]) {
     bool has_3_arguments = (nr_of_args == 3);
 
@@ -24,7 +28,7 @@ int main(int nr_of_args, char *args[]) {
         std::string first_argument{args[1]};
         int ascii_sum_of_first_arg = computeAsciiSum(first_argument);
 
-        if ((ascii_sum_of_first_arg ^ first_char_of_first_arg * 3) << (program_name_length & 0x1f) == expected_value) {
+        if (calculateKey(ascii_sum_of_first_arg, first_char_of_first_arg, program_name_length) == expected_value) {
             std::cout << "Correct!" << std::endl;
         } else {
             std::cout << "Wrong!" << std::endl;
