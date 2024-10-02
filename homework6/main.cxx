@@ -2,18 +2,18 @@
 #include <string>
 #include <cstdlib>
 
-int computeAsciiSum(const std::string& first_argument) {
-    int ascii_sum_of_first_arg = 0;
+int computeChecksum(const std::string& first_argument) {
+    int checksum_of_first_arg = 0;
 
     for (char c : first_argument) {
-        ascii_sum_of_first_arg += c;
+        checksum_of_first_arg += c;
     }
     
-    return ascii_sum_of_first_arg;
+    return checksum_of_first_arg;
 }
 
-int calculateKey(int ascii_sum, char first_char, std::size_t length) {
-    return (ascii_sum ^ (first_char * 3)) << (length & 0x1f)
+int calculateKey(int checksum, char first_char, std::size_t length) {
+    return (checksum ^ (first_char * 3)) << (length & 0x1f);
 }
 
 int main(int nr_of_args, char *args[]) {
@@ -26,17 +26,31 @@ int main(int nr_of_args, char *args[]) {
         int expected_value{std::atoi(args[2])};
 
         std::string first_argument{args[1]};
-        int ascii_sum_of_first_arg = computeAsciiSum(first_argument);
+        int checksum_of_first_arg = computeChecksum(first_argument);
 
-        if (calculateKey(ascii_sum_of_first_arg, first_char_of_first_arg, program_name_length) == expected_value) {
+        int key = calculateKey(checksum_of_first_arg, first_char_of_first_arg, program_name_length);
+        std::cout << "The checksum key is: " << key << std::endl;
+
+        std::cout << "The expected key is: " << expected_value << std::endl;
+
+        std::cout << "The checksum of the first argument is: " << checksum_of_first_arg << std::endl;
+        
+
+
+
+
+        if (key == expected_value) {
             std::cout << "Correct!" << std::endl;
         } else {
             std::cout << "Wrong!" << std::endl;
         }
     } else {
-        std::cout << "Usage: " << args[0] << " <first_argument> <expected_value>" << std::endl;
+        std::cout << "Invalid input" << std::endl;
+        std::cout << "Usage" << args[0] << " <first_argument> <some_integer>" << std::endl;
+        return 1;
     }
+    
 
-    return 0;
+    
 }
 
