@@ -1,21 +1,24 @@
 #include <iostream>
 #include <string>
-int main(int var0, char *var1[]) {
-  if (var0 == 3) {
-    std::string var2{var1[0]};
-    auto var3{*(var1[1])};
-    auto var4{var2.size()};
-    auto var5{std::atoi(var1[2])};
-    auto var6{0};
-    auto var7{0};
-    std::string var8{var1[1]};
+int main(int nr_of_args, char *args[]) {
+
+  bool has_3_arguments = (nr_of_args == 3);
+
+  if (has_3_arguments) {
+    std::string program_name{args[0]};
+    char first_char_of_first_arg{*(args[1])};
+    std:size_t program_name_length{program_name.size()};
+    int expected_value{std::atoi(args[2])};
+    int ascii_sum_of_first_arg = 0;
+    int char_index = 0;
+    std::string first_argument{args[1]};
     while (true) {
-      var6 += var8[var7++];
-      if (var7 >= static_cast<int>(var8.size())) {
+      ascii_sum_of_first_arg += first_argument[char_index++];
+      if (char_index >= static_cast<int>(first_argument.size())) {
         break;
       }
     }
-    if ((var6 ^ var3 * 3) << (var4 & 0x1f) == var5) {
+    if ((ascii_sum_of_first_arg ^ first_char_of_first_arg * 3) << (program_name_length & 0x1f) == expected_value) {
       std::cout << "Correct!" << std::endl;
     } else {
       std::cout << "Wrong!" << std::endl;
