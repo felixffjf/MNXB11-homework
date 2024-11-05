@@ -1,50 +1,34 @@
-# Compiler and flags
-CXX := g++
-CXXWARNINGS := -Wall -Wextra -Werror
-CXXOPT := -O3
-CXXSTD := -std=c++17
+# Define the compiler and flags
+CXX = g++
+CXXFLAGS = -I./external/include -std=c++11 -Werror -Wall -Wextra
 
-# Project directories
-BUILD_DIR := build
-SRC_DIR := src
-EXTERNAL_INCLUDE_DIR := external/include
+# Define directories
+SRC_DIR = src
+BUILD_DIR = build
+EXTERNAL_DIR = external
+LIB_DIR = $(EXTERNAL_DIR)/lib
+INCLUDE_DIR = $(EXTERNAL_DIR)/include
 
-# Include directories
-INCLUDES := -I $(EXTERNAL_INCLUDE_DIR) 
+# Define source files and the target executable
+SRC_FILES = $(wildcard $(SRC_DIR)/*.cxx)
+OBJ_FILES = $(SRC_FILES:$(SRC_DIR)/%.cxx=$(BUILD_DIR)/%.o)
+TARGET = main
 
-# CXXFLAGS includes compiler warnings, standard, optimization, and includes
-CXXFLAGS := $(CXXWARNINGS) $(CXXSTD) $(CXXOPT) $(INCLUDES)
+# Default rule
+all: $(TARGET)
 
-# LDFLAGS includes ROOT libraries (glibs)
-LDFLAGS := $(ROOTLIBS)
+# Rule for creating the target executable
+$(TARGET): $(OBJ_FILES)
+$(CXX) -o $@ $^ -L$(LIB_DIR) -lcli11
 
-# Source and object files
-SRCS := $(wildcard $(SRC_DIR)/*.cxx) main.cxx
-OBJS := $(patsubst %.cxx,$(BUILD_DIR)/%.o,$(notdir $(SRCS)))
+# Rule for object files
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cxx
+@mkdir -p $(BUILD_DIR)
+$(CXX) $(CXXFLAGS) -c $< -o $@
+
+# Clean rule
+clean:
+rm -rf $(BUILD_DIR)/*.o $(TARGET)
 
 # Phony targets
 .PHONY: all clean
-
-# Build the executable
-all: $(BUILD_DIR) $(BUILD_DIR)/main
-
-# Ensure the build directory exists
-$(BUILD_DIR):
-	mkdir -p $(BUILD_DIR)
-
-# Link the final executable
-$(BUILD_DIR)/main: $(OBJS)
-	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
-
-# Compile each source file into an object file in the build directory
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cxx | $(BUILD_DIR)
-	$(CXX) $(CXXFLAGS) -c $< -o $@
-
-# Compile main.cxx directly into the build directory
-$(BUILD_DIR)/main.o: main.cxx | $(BUILD_DIR)
-	$(CXX) $(CXXFLAGS) -c $< -o $@
-
-# Clean up generated files
-clean:
-	rm -rf $(BUILD_DIR)/*.o $(BUILD_DIR)/main
-
