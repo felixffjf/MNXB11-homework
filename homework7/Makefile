@@ -1,26 +1,50 @@
+# Compiler and flags
 CXX := g++
 CXXWARNINGS := -Wall -Wextra -Werror
 CXXOPT := -O3
 CXXSTD := -std=c++17
-INCLUDES := -I include
-CXXFLAGS := $(CXXWARNINGS) $(CXXSTD) $(CXXOPT) $(INCLUDES)
-LDFLAGS :=
 
+# Project directories
+BUILD_DIR := build
+SRC_DIR := src
+EXTERNAL_INCLUDE_DIR := external/include
+
+# Include directories
+INCLUDES := -I $(EXTERNAL_INCLUDE_DIR) 
+
+# CXXFLAGS includes compiler warnings, standard, optimization, and includes
+CXXFLAGS := $(CXXWARNINGS) $(CXXSTD) $(CXXOPT) $(INCLUDES)
+
+# LDFLAGS includes ROOT libraries (glibs)
+LDFLAGS := $(ROOTLIBS)
+
+# Source and object files
+SRCS := $(wildcard $(SRC_DIR)/*.cxx) main.cxx
+OBJS := $(patsubst %.cxx,$(BUILD_DIR)/%.o,$(notdir $(SRCS)))
+
+# Phony targets
 .PHONY: all clean
 
-all: main
+# Build the executable
+all: $(BUILD_DIR) $(BUILD_DIR)/main
 
-# If you add new source files in the src/ directory, remember to add the
-# corresponding object file as a dependency here so that Make knows that it
-# should build it and link to it
-#
-# Remove the Example object file when you are done looking at it, it doesn't
-# contribute to the executable!
-main: main.cxx src/Example.o
+# Ensure the build directory exists
+$(BUILD_DIR):
+	mkdir -p $(BUILD_DIR)
+
+# Link the final executable
+$(BUILD_DIR)/main: $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
-src/%.o: src/%.cxx
-	$(CXX) $(CXXFLAGS) $^ -c -o $@
+# Compile each source file into an object file in the build directory
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cxx | $(BUILD_DIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
+# Compile main.cxx directly into the build directory
+$(BUILD_DIR)/main.o: main.cxx | $(BUILD_DIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+# Clean up generated files
 clean:
-	rm -v src/*.o main
+	rm -rf $(BUILD_DIR)/*.o $(BUILD_DIR)/main
+
