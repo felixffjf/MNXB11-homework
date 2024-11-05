@@ -1,3 +1,4 @@
+// Guard to prevent multiple inclusions
 #ifndef __MOMENTUM_H__
 #define __MOMENTUM_H__
 

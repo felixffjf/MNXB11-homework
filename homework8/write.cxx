@@ -1,7 +1,7 @@
 #include <TFile.h>
 #include <TTree.h>
 #include <TRandom.h>
-#include "momentum.h"
+#include "Momentum.h"
 
 void write() {
     TFile *file = new TFile("tree_file.root", "RECREATE"); // Open file for writing
