@@ -1,6 +1,6 @@
 # Define the compiler and flags
 CXX = g++
-CXXFLAGS = -I./external/include -std=c++11 -Werror -Wall -Wextra
+CXXFLAGS = -I./external/include -std=c++11 -Werror  -Wall -Wextra $(shell root-config --incdir)
 
 # Define directories
 SRC_DIR = src
@@ -19,7 +19,7 @@ all: $(TARGET)
 
 # Rule for creating the target executable
 $(TARGET): $(OBJ_FILES)
-$(CXX) -o $@ $^ -L$(LIB_DIR) -lcli11
+$(CXX) -o $@ $^ -L$(LIB_DIR) -lcli11 $(shell root-config --glibs)
 
 # Rule for object files
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cxx
